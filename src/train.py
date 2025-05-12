@@ -9,6 +9,10 @@ from datasets import Dataset, DatasetDict
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 from transformers import TrainingArguments, Trainer
 
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 
 # loads dataset --> nr samples is selected, because training on full dataset would be very time consuming
 def load_dataset(path, nr_samples_per_class=100):
@@ -79,7 +83,7 @@ def compute_metrics(eval_pred):
 if __name__ == '__main__':
     mlflow.set_experiment('DistilBERT_Review_Classifier')
     # set parameters
-    nr_samples_per_class = 25
+    nr_samples_per_class = 3000
     lr = 2e-5
     epochs = 3
     batch_size = 32
@@ -103,7 +107,7 @@ if __name__ == '__main__':
         
         # load dataset
         path = './data/reviews_with_labels.csv'
-        df_raw = load_dataset(path)
+        df_raw = load_dataset(path, nr_samples_per_class)
 
         # make df ready for tokenization
         dataset, unique_labels, label2id, id2label, numeric_labels = get_huggingface_dataset_and_label_maps(df_raw)
@@ -130,7 +134,7 @@ if __name__ == '__main__':
         training_args = TrainingArguments(
             output_dir='./distilbert-review-classifier',
             eval_strategy='epoch',
-            save_strategy='no',
+            save_strategy='epoch',
             logging_strategy='epoch',
             learning_rate=lr,
             per_device_train_batch_size=batch_size,
@@ -155,7 +159,7 @@ if __name__ == '__main__':
         trainer.train()
 
         # Save model locally and log it with MLflow
-        save_path = f'./checkpoints/{run_name}_{timestamp}'
+        save_path = f'./checkpoints/{timestamp}_{run_name}'
         trainer.save_model(save_path)
         tokenizer.save_pretrained(save_path)
 
@@ -166,3 +170,24 @@ if __name__ == '__main__':
         # log final accuracy
         metrics = trainer.evaluate()
         mlflow.log_metric('eval_accuracy', metrics['eval_accuracy'])
+
+    # Get predictions
+    predictions = trainer.predict(eval_dataset)
+
+    # Extract labels and predicted classes
+    y_true = predictions.label_ids
+    y_pred = predictions.predictions.argmax(-1)
+
+    # Confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Optional: label names if you have id2label mapping
+    labels = list(id2label.values())  # or just ["negative", "positive"] etc.
+
+    # Plot
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(cm, annot=True, fmt='d', xticklabels=labels, yticklabels=labels, cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.show()
