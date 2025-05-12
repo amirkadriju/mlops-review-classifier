@@ -1,5 +1,7 @@
 data/database.sqlite
 data/hashes.txt
 data/
-notebooks
-mlruns
+notebooks/
+mlruns/
+checkpoints/
+distilbert-review-classifier/
