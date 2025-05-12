@@ -18,7 +18,7 @@ if __name__ == '__main__':
     df = pd.read_csv('./data/Reviews.csv')
 
     # set labels
-    df['label'] = df['Score'].apply(review_classification)
+    df['labels'] = df['Score'].apply(review_classification)
 
     # save new dataset with label
     df.to_csv('./data/reviews_with_labels.csv', index=False)
