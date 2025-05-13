@@ -5,3 +5,5 @@ notebooks/
 mlruns/
 checkpoints/
 distilbert-review-classifier/
+best_model/
+results/
