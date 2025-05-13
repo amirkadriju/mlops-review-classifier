@@ -83,9 +83,9 @@ def compute_metrics(eval_pred):
 if __name__ == '__main__':
     mlflow.set_experiment('DistilBERT_Review_Classifier')
     # set parameters
-    nr_samples_per_class = 3000
+    nr_samples_per_class = 5000
     lr = 2e-5
-    epochs = 3
+    epochs = 4
     batch_size = 32
     weight_decay = 0.01
     
