@@ -2,7 +2,7 @@ import torch
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 
 # Load model and tokenizer from checkpoint
-model_path = './checkpoints/best_model'
+model_path = './best_model'
 tokenizer = DistilBertTokenizer.from_pretrained(model_path)
 model = DistilBertForSequenceClassification.from_pretrained(model_path)
 model.eval()
