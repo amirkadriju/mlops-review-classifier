@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: review-classifier
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: review-classifier
+  template:
+    metadata:
+      labels:
+        app: review-classifier
+    spec:
+      containers:
+        - name: review-classifier
+          image: review-classifier:latest
+          ports:
+            - containerPort: 5000
