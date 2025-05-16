@@ -7,7 +7,7 @@ tokenizer = DistilBertTokenizer.from_pretrained(model_path)
 model = DistilBertForSequenceClassification.from_pretrained(model_path)
 model.eval()
 
-# Sample input
+# Test input
 texts = [
     "This product is amazing!",
     "Worst experience ever. Not recommended.",
@@ -24,7 +24,7 @@ with torch.no_grad():
     logits = outputs.logits
     predictions = torch.argmax(logits, dim=1)
 
-# Convert predictions to labels if needed
+# Convert predictions to labels
 id2label = model.config.id2label
 predicted_labels = [id2label[int(pred)] for pred in predictions]
 
